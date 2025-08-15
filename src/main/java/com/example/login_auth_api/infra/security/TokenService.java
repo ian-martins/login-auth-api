@@ -24,7 +24,7 @@ public class TokenService {
             Algorithm algorithm = Algorithm.HMAC256(secret);
 
             String token = JWT.create()
-                    .withIssuer("secret")
+                    .withIssuer("login-auth-api")
                     .withSubject(user.getEmail())
                     .withExpiresAt(this.generateExpiraionDate()).sign(algorithm);
             return token;
@@ -33,15 +33,20 @@ public class TokenService {
         }
     }
 
-    public String vaidateToken(String token){
-        try{
-            
-        }catch(JWTVerificationException){
+    public String vaidateToken(String token) {
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(secret);
+            return JWT.require(algorithm)
+                    .withIssuer("login-auth-api")
+                    .build()
+                    .verify(token)
+                    .getSubject();
+        } catch (JWTVerificationException exception) {
             return null;
         }
     }
 
     private Instant generateExpiraionDate() {
-        return LocalDateTime.now().plusHours(1).toInstant(ZoneOffset.of("-3hours"));
+        return LocalDateTime.now().plusHours(1).toInstant(ZoneOffset.of("-03:00"));
     }
 }
